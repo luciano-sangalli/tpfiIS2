@@ -1,0 +1,42 @@
+venv/
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+docs/api/
+dist/
+*.egg-info/
+
+IS2_TPFI_credentials.json
+.aws/
+*.pem
+.env
+
+# Material de la c�tedra y credenciales
+referencia/
+*credential*
+*secret*
+*.key
+*.csv
+.env*
+
+# Archivos de prueba generados
+input.json
+output.json
+salida.json
+observer.json
+
+# Editor y sistema
+.vscode/
+.idea/
+Thumbs.db
+desktop.ini
+
+# Pedidos de prueba
+set[0-9].json
+get[0-9].json
+list[0-9].json
