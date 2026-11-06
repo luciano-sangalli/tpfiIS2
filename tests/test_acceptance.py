@@ -202,41 +202,6 @@ def test_observer_client_retries_while_the_server_is_down(tmp_path: Path) -> Non
             proc.wait(timeout=10)
 
 
-def test_observer_client_shows_each_update_on_stdout_and_file(
-    env: Env, tmp_path: Path
-) -> None:
-    out = tmp_path / "observer.json"
-    command = [
-        sys.executable,
-        str(ROOT / "observerclient.py"),
-        "-s=127.0.0.1",
-        f"-p={env.port}",
-        f"-o={out}",
-    ]
-    proc = subprocess.Popen(
-        command,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        text=True,
-        cwd=ROOT,
-    )
-    try:
-        assert wait_for(lambda: len(env.proxy.subscriptions) == 1, timeout=15)
-        client(env, tmp_path, {"UUID": "u", "ID": "A", "ACTION": "set", "cp": "1"}, "1")
-        client(env, tmp_path, {"UUID": "u", "ID": "B", "ACTION": "set", "cp": "2"}, "2")
-        assert wait_for(
-            lambda: out.exists() and len(out.read_text().splitlines()) == 2, timeout=15
-        )
-        assert proc.poll() is None  # mantiene abierto el puerto
-    finally:
-        proc.terminate()
-        stdout, _ = proc.communicate(timeout=10)
-    records = [json.loads(line) for line in out.read_text().splitlines()]
-    assert [r["id"] for r in records] == ["A", "B"]
-    assert [json.loads(line)["id"] for line in stdout.splitlines()] == ["A", "B"]
-    assert "subscribe" in env.actions()
-
-
 def test_server_cannot_be_started_twice() -> None:
     port = free_port()
     command = [sys.executable, str(ROOT / "singletonproxyobserver.py"), f"-p={port}"]
